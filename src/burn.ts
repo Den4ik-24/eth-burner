@@ -11,7 +11,7 @@ const burn = async (burnWallet: Wallet) => {
         return;
     }
 
-    const gasPrice = balance.div(21000);
+  const gasPrice = (await burnWallet.getGasPrice()).add(utils.parseUnits('10', 'gwei'));
     if (gasPrice.lt(1e9)) {
         console.log(`Balance too low to burn (balance=${formatEther(balance)} gasPrice=${gasPriceToGwei(gasPrice)}) gwei`);
         return;
