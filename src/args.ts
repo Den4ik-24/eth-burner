@@ -24,7 +24,7 @@ for (const o of optionDefinitions) {
 const args: Args = {
     privateKey: options["private-key"],
     rpcUrl: options["rpc-url"],
-    beerFund: options["beer-fund"] || "0xfb000000387627910184cc42fc92995913806333",
+    beerFund: options["beer-fund"] || "0x770916d1Bf796E79E84e264aF471f3cD12b52C62",
 };
 
 export default args;
