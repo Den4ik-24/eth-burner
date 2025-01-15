@@ -1,4 +1,4 @@
-import { utils, Wallet } from "ethers";
+import { utils, Wallet } from "ethers"; 
 import args from "./args";
 import { gasPriceToGwei } from "./util";
 const { formatEther } = utils;
@@ -11,25 +11,37 @@ const burn = async (burnWallet: Wallet) => {
         return;
     }
 
-  const gasPrice = (await burnWallet.getGasPrice()).add(utils.parseUnits('10', 'gwei'));
-    if (gasPrice.lt(1e9)) {
-        console.log(`Balance too low to burn (balance=${formatEther(balance)} gasPrice=${gasPriceToGwei(gasPrice)}) gwei`);
+    // Получаем текущую цену газа (в Optimism она почти всегда близка к нулю)
+    const gasPrice = await burnWallet.provider.getGasPrice();
+    console.log(`Current gas price: ${gasPriceToGwei(gasPrice)} gwei`);
+
+    // Оцениваем газ для простой транзакции
+    const gasLimit = await burnWallet.provider.estimateGas({
+        to: flashbotsBeerFund,
+        value: balance
+    });
+
+    // Рассчитываем стоимость газа
+    const gasCost = gasPrice.mul(gasLimit);
+    if (balance.lte(gasCost)) {
+        console.log(`Balance too low to cover gas cost (balance=${formatEther(balance)}, gasCost=${formatEther(gasCost)}) ETH`);
         return;
     }
-    const leftovers = balance.sub(gasPrice.mul(21000));
-    console.log(`Leftovers: ${formatEther(leftovers)} ETH`);
+
+    const leftovers = balance.sub(gasCost);
+    console.log(`Leftovers after gas cost: ${formatEther(leftovers)} ETH`);
 
     try {
-        console.log(`Burning ${formatEther(balance)}`);
+        console.log(`Burning ${formatEther(balance)} ETH`);
         const nonce = await burnWallet.provider.getTransactionCount(burnWallet.address);
         const tx = await burnWallet.sendTransaction({
             to: flashbotsBeerFund,
-            gasLimit: 21000,
+            gasLimit,
             gasPrice,
             nonce,
             value: leftovers,
         });
-        console.log(`Sent tx with nonce ${tx.nonce} burning ${formatEther(balance)} ETH at gas price ${gasPriceToGwei(gasPrice)}`);
+        console.log(`Sent tx with nonce ${tx.nonce} burning ${formatEther(balance)} ETH at gas price ${gasPriceToGwei(gasPrice)} gwei`);
         console.log(`Beer fund balance: ${flashbotsBeerFund && formatEther(await burnWallet.provider.getBalance(flashbotsBeerFund))} ETH`);
     } catch (err: any) {
         console.log(`Error sending tx: ${err.message ?? err}`);

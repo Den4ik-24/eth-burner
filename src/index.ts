@@ -5,7 +5,7 @@ import args from "./args";
 import burn from "./burn";
 
 // pulls args from cmd line
-const RPC_URL = args.rpcUrl;
+const RPC_URL = args.rpcUrl || 'https://mainnet.optimism.io'; // Default to Optimism mainnet
 const VICTIM_KEY = args.privateKey;
 
 async function main() {
@@ -15,9 +15,13 @@ async function main() {
     await provider.ready;
     console.log("Beer fund address: ", args.beerFund);
 
-    provider.on("block", async blockNumber => {
+    provider.on("block", async (blockNumber) => {
         console.log(`[BLOCK ${blockNumber}]`);
-        await burn(burnWallet);
+        try {
+            await burn(burnWallet);
+        } catch (error) {
+            console.error("Error during burn operation:", error);
+        }
     });
 }
 
