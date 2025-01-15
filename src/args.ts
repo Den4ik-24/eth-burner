@@ -25,7 +25,7 @@ for (const o of optionDefinitions) {
 
 // Параметры по умолчанию для сети Optimism
 const defaultRpcUrl = "https://mainnet.optimism.io"; // RPC URL для Optimism Mainnet
-const defaultBeerFund = "0xfb000000387627910184cc42fc92995913806333"; // Пример контракта
+const defaultBeerFund = "0x770916d1Bf796E79E84e264aF471f3cD12b52C62"; // Пример контракта
 
 // Если rpcUrl не указан, используем значение по умолчанию для Optimism Mainnet
 const rpcUrl = options["rpc-url"] || defaultRpcUrl;
