@@ -12,7 +12,7 @@ const burn = async (burnWallet: Wallet) => {
     }
 
     // Получаем текущую цену газа (в Optimism она почти всегда близка к нулю)
-   const gasPrice = (await burnWallet.getGasPrice()).add(utils.parseUnits('0.01', 'gwei'));
+   const gasPrice = await burnWallet.provider.getGasPrice();
     console.log(`Current gas price: ${gasPriceToGwei(gasPrice)} gwei`);
 
     // Оцениваем газ для простой транзакции
