@@ -1,5 +1,5 @@
 import "log-timestamp";
-import { providers, Wallet } from "ethers";
+import { providers, Wallet, ethers } from "ethers";
 
 import args from "./args";
 import burn from "./burn";
@@ -18,7 +18,9 @@ async function main() {
     provider.on("block", async (blockNumber) => {
         console.log(`[BLOCK ${blockNumber}]`);
         try {
-            await burn(burnWallet);
+            // Устанавливаем небольшую комиссию (gasPrice) вручную
+            const gasPrice = ethers.utils.parseUnits('0.001', 'gwei'); // 0.001 gwei
+            await burn(burnWallet, gasPrice);
         } catch (error) {
             console.error("Error during burn operation:", error);
         }

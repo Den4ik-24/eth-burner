@@ -7,5 +7,6 @@ export const gasPriceToGwei = (gasPrice: BigNumber) => {
     if (gasPrice.isZero()) {
         return 0; // Explicitly return 0 gwei if gasPrice is zero
     }
-    return gasPrice.mul(100).div(GWEI).toNumber() / 100;
+    // Multiply by 1e6 to keep precision, then divide by 1e9 (GWEI) and return as float
+    return gasPrice.mul(1e6).div(GWEI).toNumber() / 1e6;
 };
